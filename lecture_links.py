@@ -7,19 +7,24 @@ from datetime import date, datetime, timedelta
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import StaleElementReferenceException 
+from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException 
 
 #Getting all the class links of a particular course on a given day
 def get_class_link(course_name):
     course_link = []
-    course_schedule = driver.find_elements_by_xpath("//div[contains(@title, '" + course_name + "')]//a[@class = 'recordingbtn']")
-    if len(course_schedule) > 0:
-        class_type = driver.find_elements_by_xpath("//div[contains(@title, '" + course_name + "')]//h6")
+    course_title = driver.find_elements_by_xpath("//div[contains(@title, '" + course_name + "')][contains(@class, 'rbc-event')]")
+    course_title = [k.get_attribute("title") for k in course_title] 
+    if len(course_title) > 0:
         class_date = driver.find_element_by_class_name('rbc-toolbar-label').text
-        for i in range(len(course_schedule)):
-            course_link.append([class_type[i].text[-2]])
+        for i in range(len(course_title)):
+            try:
+                course_recording = driver.find_element_by_xpath("//div[@title = '" + course_title[i] + "']//a[@class = 'recordingbtn']")
+            except NoSuchElementException:
+                continue    
+            class_type = driver.find_element_by_xpath("//div[@title = '" + course_title[i] + "']//h6")
+            course_link.append([class_type.text[-2]])
             course_link[-1].extend(class_date.split())
-            course_link[-1].append(course_schedule[i].get_attribute("vurl").replace('preview', 'view'))
+            course_link[-1].append(course_recording.get_attribute("vurl").replace('preview', 'view'))
             course_link[-1][2] = datetime.strptime(course_link[-1][2], '%b').strftime('%B')
     return course_link        
 
@@ -86,6 +91,7 @@ if __name__ == "__main__":
             except StaleElementReferenceException:
                 continue                
         week_start -= timedelta(days = 1)
+    driver.quit()    
     print("Data Collected")
     #Saving all data to a .csv file with filename taken as input
     filename = input("Save As(Enter filename/path without extension): ").strip()
