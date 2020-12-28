@@ -18,13 +18,13 @@ def get_class_link(course_name):
         class_date = driver.find_element_by_class_name('rbc-toolbar-label').text
         for i in range(len(course_title)):
             try:
-                course_recording = driver.find_element_by_xpath("//div[@title = '" + course_title[i] + "']//a[@class = 'recordingbtn']")
+                course_recording = driver.find_element_by_xpath("//div[@title = '" + course_title[i] + "']//a[@class = 'recordingbtn']").get_attribute("vurl").replace('preview', 'view')
             except NoSuchElementException:
-                continue    
+                course_recording = 'Class Cancelled' 
             class_type = driver.find_element_by_xpath("//div[@title = '" + course_title[i] + "']//h6")
             course_link.append([class_type.text[-2]])
             course_link[-1].extend(class_date.split())
-            course_link[-1].append(course_recording.get_attribute("vurl").replace('preview', 'view'))
+            course_link[-1].append(course_recording)
             course_link[-1][2] = datetime.strptime(course_link[-1][2], '%b').strftime('%B')
     return course_link        
 
@@ -102,4 +102,5 @@ if __name__ == "__main__":
         f.write((i[0].upper() + " " + str(count[i[0].upper()]) + "," + i[2] + " " + i[3] + "," + i[1] + "," + i[-1] + "\n"))
         count[i[0].upper()] += 1
     f.write(("\nLegend:" + ((count['L'] > 1) * "   L - Lecture") + ((count['P'] > 1) * "   P - Practical") + ((count['T'] > 1) * "   T - Tutorial")))    
-    f.close()    
+    f.close() 
+    print("File Saved")   
