@@ -7,7 +7,7 @@ from datetime import date, datetime, timedelta
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException 
+from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException, ElementClickInterceptedException 
 
 #Getting all the class links of a particular course on a given day
 def get_class_link(course_name):
@@ -33,13 +33,24 @@ if __name__ == "__main__":
     #Taking user credentials and course details as input
     email_id = input("Email Id(Without @st.niituniversity.in): ").strip()
     password = getpass().strip()
-    course_name = input("Enter any keyword related to course(Ex. Algorithms from Introduction to Algorithms, Data Structures from Data Structures): ").strip()
+    course_name = input("Enter any keyword related to course(Ex. Algorithms from Introduction to Algorithms, Data Structures from Data Structures)(Case Sensitive): ").strip()
     course_start_date = datetime.strptime(input("Enter starting date of the course(DD/MM/YYYY): ").strip(), '%d/%m/%Y').date()
     week_start = date.today()
     course_data = []
-    #Opening Website
+    #Opening Website using desired browser
+    browser = 0
+    while True:
+        browser = int(input("Choose your browswer:\n1. Chrome\n2. Firefox\nChoose: "))
+        if browser == 1:
+            driver = webdriver.Chrome("E:\Programming\drivers\chromedriver")  # Enter your chromdriver path here
+            break
+        elif browser == 2:
+            driver = webdriver.Firefox(executable_path = "E:\Programming\drivers\geckodriver.exe")  # Enter your geckodriver path here
+            break
+        else:
+            print("Please choose a valid option.")
+            continue
     print("Opening Website...")
-    driver = webdriver.Chrome("E:\Programming\drivers\chromedriver")
     driver.get("https://learn.niituniversity.in")
     driver.maximize_window()
     #Logging In with Email ID and Password
@@ -60,11 +71,16 @@ if __name__ == "__main__":
             break
         except:
             continue
-    #Navigating to the course calendar        
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CLASS_NAME, 'calendaricon'))
-    ).click()
-    WebDriverWait(driver, 10).until(
+    #Navigating to the course calendar
+    while True:
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, 'calendaricon'))
+            ).click()
+            break
+        except ElementClickInterceptedException:
+            continue
+    WebDriverWait(driver, 60).until(
         EC.presence_of_element_located((By.XPATH, "//option[@value = 'day']"))
     ).click()
     WebDriverWait(driver, 10).until(
