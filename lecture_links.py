@@ -95,6 +95,10 @@ if __name__ == "__main__":
             print('The webpage is taking too much time to load. Please check your internet connection and try again.')
         except (ElementClickInterceptedException, StaleElementReferenceException):
             continue
+        except:
+            print_exc()
+            print('Unfortunately the code has encountered an unexpected exception o(╥﹏╥)o. But don\'t worry, if the program is still running we\'ll be fine ‿( ́ ̵ _-`)‿.')
+            continue
     WebDriverWait(driver, 300).until(
         EC.presence_of_element_located((By.XPATH, "//option[@value = 'day']"))
     ).click()
