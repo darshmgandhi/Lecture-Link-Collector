@@ -56,13 +56,13 @@ if __name__ == "__main__":
     driver.maximize_window()
     #Logging In with Email ID and Password
     driver.find_element_by_class_name('login-btn').click()
-    WebDriverWait(driver, 600).until(
+    WebDriverWait(driver, 300).until(
         EC.presence_of_element_located((By.ID, 'identifierId'))
     ).send_keys(email_id)
     driver.find_element_by_class_name('VfPpkd-RLmnJb').click()
     while True:
         try:       
-            WebDriverWait(driver, 600).until(
+            WebDriverWait(driver, 300).until(
                 EC.presence_of_element_located((By.NAME, 'password'))
             ).send_keys(password)
             break
@@ -70,6 +70,7 @@ if __name__ == "__main__":
             print('The webpage is taking too much time to load. Please check your internet connection and try again.')
         except:
             print_exc()
+            print('Unfortunately the code has encountered an unexpected exception o(╥﹏╥)o. But don\'t worry, if the program is still running we\'ll be fine ‿( ́ ̵ _-`)‿.')
             continue        
     while True:
         try:       
@@ -81,11 +82,12 @@ if __name__ == "__main__":
             continue
         except:
             print_exc()
+            print('Unfortunately the code has encountered an unexpected exception o(╥﹏╥)o. But don\'t worry, if the program is still running we\'ll be fine ‿( ́ ̵ _-`)‿.')
             continue
     #Navigating to the course calendar
     while True:
         try:
-            WebDriverWait(driver, 600).until(
+            WebDriverWait(driver, 300).until(
                 EC.presence_of_element_located((By.CLASS_NAME, 'calendaricon'))
             ).click()
             break
@@ -93,10 +95,10 @@ if __name__ == "__main__":
             print('The webpage is taking too much time to load. Please check your internet connection and try again.')
         except (ElementClickInterceptedException, StaleElementReferenceException):
             continue
-    WebDriverWait(driver, 600).until(
+    WebDriverWait(driver, 300).until(
         EC.presence_of_element_located((By.XPATH, "//option[@value = 'day']"))
     ).click()
-    WebDriverWait(driver, 600).until(
+    WebDriverWait(driver, 300).until(
         EC.presence_of_element_located((By.CLASS_NAME, 'rbc-toolbar-label'))
     )
     #Collecting all class links from the given start date
@@ -106,7 +108,7 @@ if __name__ == "__main__":
         course_data = course_link + course_data
     while week_start > course_start_date:
         try:
-            WebDriverWait(driver, 600).until(
+            WebDriverWait(driver, 300).until(
                 EC.presence_of_element_located((By.CLASS_NAME, 'nextp-btn'))
             ).click()
         except TimeoutException:
@@ -115,6 +117,7 @@ if __name__ == "__main__":
             continue
         except:
             print_exc()
+            print('Unfortunately the code has encountered an unexpected exception o(╥﹏╥)o. But don\'t worry, if the program is still running we\'ll be fine ‿( ́ ̵ _-`)‿.')
             continue
         while True:                
             try:        
@@ -128,6 +131,7 @@ if __name__ == "__main__":
                 continue    
             except:
                 print_exc()
+                print('Unfortunately the code has encountered an unexpected exception o(╥﹏╥)o. But don\'t worry, if the program is still running we\'ll be fine ‿( ́ ̵ _-`)‿.')
                 continue            
         week_start -= timedelta(days = 1)
     driver.quit()    
