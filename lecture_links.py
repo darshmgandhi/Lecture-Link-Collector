@@ -7,7 +7,7 @@ from datetime import date, datetime, timedelta
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException, ElementClickInterceptedException 
+from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException, ElementClickInterceptedException, TimeoutException
 
 #Getting all the class links of a particular course on a given day
 def get_class_link(course_name):
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     #Opening Website using desired browser
     browser = 0
     while True:
-        browser = int(input("Choose your browswer:\n1. Chrome\n2. Firefox\nChoose: "))
+        browser = int(input("Choose your browser:\n1. Chrome\n2. Firefox\nChoose: "))
         if browser == 1:
             driver = webdriver.Chrome("E:\Programming\drivers\chromedriver")  # Enter your chromdriver path here
             break
@@ -55,35 +55,43 @@ if __name__ == "__main__":
     driver.maximize_window()
     #Logging In with Email ID and Password
     driver.find_element_by_class_name('login-btn').click()
-    driver.find_element_by_id('identifierId').send_keys(email_id)
+    WebDriverWait(driver, 600).until(
+        EC.presence_of_element_located((By.ID, 'identifierId'))
+    ).send_keys(email_id)
     driver.find_element_by_class_name('VfPpkd-RLmnJb').click()
     while True:
         try:       
-            WebDriverWait(driver, 10).until(
+            WebDriverWait(driver, 600).until(
                 EC.presence_of_element_located((By.NAME, 'password'))
             ).send_keys(password)
             break
+        except TimeoutException:
+            print('The webpage is taking too much time to load. Please check your internet connection and try again.')
         except:
             continue        
     while True:
         try:       
             driver.find_element_by_class_name('VfPpkd-RLmnJb').click()  
             break
-        except:
+        except TimeoutException:
+            print('The webpage is taking too much time to load. Please check your internet connection and try again.')        
+        except (ElementClickInterceptedException, StaleElementReferenceException):
             continue
     #Navigating to the course calendar
     while True:
         try:
-            WebDriverWait(driver, 10).until(
+            WebDriverWait(driver, 600).until(
                 EC.presence_of_element_located((By.CLASS_NAME, 'calendaricon'))
             ).click()
             break
-        except ElementClickInterceptedException:
+        except TimeoutException:
+            print('The webpage is taking too much time to load. Please check your internet connection and try again.')
+        except (ElementClickInterceptedException, StaleElementReferenceException):
             continue
-    WebDriverWait(driver, 60).until(
+    WebDriverWait(driver, 600).until(
         EC.presence_of_element_located((By.XPATH, "//option[@value = 'day']"))
     ).click()
-    WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 600).until(
         EC.presence_of_element_located((By.CLASS_NAME, 'rbc-toolbar-label'))
     )
     #Collecting all class links from the given start date
@@ -93,9 +101,11 @@ if __name__ == "__main__":
         course_data = course_link + course_data
     while week_start > course_start_date:
         try:
-            WebDriverWait(driver, 10).until(
+            WebDriverWait(driver, 600).until(
                 EC.presence_of_element_located((By.CLASS_NAME, 'nextp-btn'))
             ).click()
+        except TimeoutException:
+            print('The webpage is taking too much time to load. Please check your internet connection and try again.')
         except StaleElementReferenceException:
             continue
         while True:                
@@ -104,6 +114,8 @@ if __name__ == "__main__":
                 if len(course_link) > 0:
                     course_data = course_link + course_data
                 break    
+            except TimeoutException:
+                print('The webpage is taking too much time to load. Please check your internet connection and try again.')
             except StaleElementReferenceException:
                 continue                
         week_start -= timedelta(days = 1)
