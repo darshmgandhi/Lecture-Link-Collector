@@ -5,7 +5,8 @@ Just run it in the console of your OS and it will guide you through.
   
 Requirements for execution:
 1. Python3
-2. chromedriver/geckodriver
+2. Selenium
+3. chromedriver/geckodriver
   
   Precautions to be taken: 
   1. Don't forget to change the path to chromedriver/geckodriver already present in the code to your own.
