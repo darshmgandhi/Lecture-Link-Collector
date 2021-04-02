@@ -2,6 +2,7 @@ import time
 import traceback
 from getpass import getpass
 from selenium import webdriver
+from traceback import print_exc
 from selenium.webdriver.common.by import By 
 from datetime import date, datetime, timedelta
 from selenium.webdriver.common.keys import Keys
@@ -68,6 +69,7 @@ if __name__ == "__main__":
         except TimeoutException:
             print('The webpage is taking too much time to load. Please check your internet connection and try again.')
         except:
+            print_exc()
             continue        
     while True:
         try:       
@@ -76,6 +78,9 @@ if __name__ == "__main__":
         except TimeoutException:
             print('The webpage is taking too much time to load. Please check your internet connection and try again.')        
         except (ElementClickInterceptedException, StaleElementReferenceException):
+            continue
+        except:
+            print_exc()
             continue
     #Navigating to the course calendar
     while True:
@@ -108,6 +113,9 @@ if __name__ == "__main__":
             print('The webpage is taking too much time to load. Please check your internet connection and try again.')
         except StaleElementReferenceException:
             continue
+        except:
+            print_exc()
+            continue
         while True:                
             try:        
                 course_link = get_class_link(course_name)
@@ -117,7 +125,10 @@ if __name__ == "__main__":
             except TimeoutException:
                 print('The webpage is taking too much time to load. Please check your internet connection and try again.')
             except StaleElementReferenceException:
-                continue                
+                continue    
+            except:
+                print_exc()
+                continue            
         week_start -= timedelta(days = 1)
     driver.quit()    
     print("Data Collected")
