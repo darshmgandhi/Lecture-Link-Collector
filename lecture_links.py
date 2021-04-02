@@ -35,7 +35,7 @@ if __name__ == "__main__":
     email_id = input("Email Id(Without @st.niituniversity.in): ").strip()
     password = getpass().strip()
     course_name = input("Enter any keyword related to course(Ex. Algorithms from Introduction to Algorithms, Data Structures from Data Structures)(Case Sensitive): ").strip()
-    course_start_date = datetime.strptime(input("Enter starting date of the course(DD/MM/YYYY): ").strip(), '%d/%m/%Y').date()
+    course_start_date = datetime.strptime(input("Enter the starting date from which the links have to be collected(DD/MM/YYYY): ").strip(), '%d/%m/%Y').date()
     week_start = date.today()
     course_data = []
     #Opening Website using desired browser
