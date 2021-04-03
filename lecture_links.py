@@ -43,10 +43,10 @@ if __name__ == "__main__":
     while True:
         browser = int(input("Choose your browser:\n1. Chrome\n2. Firefox\nChoose: "))
         if browser == 1:
-            driver = webdriver.Chrome("E:\Programming\drivers\chromedriver")  # Enter your chromdriver path here
+            driver = webdriver.Chrome(r"E:\Programming\drivers\chromedriver")  # Enter your chromdriver path here
             break
         elif browser == 2:
-            driver = webdriver.Firefox(executable_path = "E:\Programming\drivers\geckodriver.exe")  # Enter your geckodriver path here
+            driver = webdriver.Firefox(executable_path = r"E:\Programming\drivers\geckodriver.exe")  # Enter your geckodriver path here
             break
         else:
             print("Please choose a valid option.")
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     driver.quit()    
     print("Data Collected")
     #Saving all data to a .csv file with filename taken as input
-    filename = input("Save As(Enter filename/path without extension): ").strip()
+    filename = input("Save As(Enter filename/path without extension): ").strip().replace('\\\\', '\\')
     count = {'T': 1, 'P': 1, 'L': 1}
     f = open(filename + ".csv", "w")
     f.write("Class Number,Date,Day,Link\n")
