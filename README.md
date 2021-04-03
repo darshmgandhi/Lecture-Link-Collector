@@ -1,7 +1,9 @@
 # Lecture-Link-Collector
-A python program made for Nutons who want to copy and save all the google drive links of lecture recordings of a particular course for future use. 
+Lecture-Link-Collector is a python program made for Nutons that takes a course name as input and collects all the google drive links of the recordings of that particular course and saves it in a csv file format. It is aimed for for Nutons who want an easy way to access the recordings of a particular course instead of using the learn portal calendar or for Nutons who want to copy and save all the google drive links of lecture recordings of a particular course for future use. 
 This program will use selenium to do this cumbersome task for you.
-Just run it in the console of your OS and it will guide you through.  
+Just run it in the console of your OS and it will guide you through.
+
+  A sample of the output is also provided as [Sample_Optimization.csv](Sample_Optimization.csv).
   
 Requirements for execution:
 1. Python3
