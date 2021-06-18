@@ -1,1 +1,4 @@
 *.log
+token.json
+paths.json
+__pycache__
