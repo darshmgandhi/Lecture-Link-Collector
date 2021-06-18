@@ -278,9 +278,7 @@ if __name__ == "__main__":
         week_start -= timedelta(days = 1)
     driver.quit()    
     print("Data Collected")
-    print(course_data)
     #Saving all data to a .csv file with filename taken as input
-    filename = input("Save As(Enter filename/path without extension): ").strip().replace('\\\\', '\\')
     count = {'T': 1, 'P': 1, 'L': 1}
     file_data = "Class Number,Date,Day,Link\n"
     for i in course_data:
