@@ -87,12 +87,12 @@ def save(data):
         service = build('drive', 'v3', credentials = creds)    
     elif choice == 1 or choice == (len(emails) + 1):
         print('Opening authorization window...')
-        credentials = {"installed":{"client_id":"292011036249-a6r9097a7q4216d0copqhdbkon3flsa5.apps.googleusercontent.com",
+        client_credentials = {"installed":{"client_id":"292011036249-a6r9097a7q4216d0copqhdbkon3flsa5.apps.googleusercontent.com",
                        "project_id":"lecture-links-collector", "auth_uri":"https://accounts.google.com/o/oauth2/auth", 
                        "token_uri":"https://oauth2.googleapis.com/token", 
                        "auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs",
                        "client_secret":"qRsAEyh_9ddbzoLGMIM989_m", "redirect_uris":["urn:ietf:wg:oauth:2.0:oob","http://localhost"]}}
-        flow = InstalledAppFlow.from_client_config(credentials, SCOPES)
+        flow = InstalledAppFlow.from_client_config(client_credentials, SCOPES)
         creds = flow.run_local_server(port=0, authorization_prompt_message = 'Please authorize Lecture Links Collector at this URL: {url}',
                                       success_message = 'Thank you for the authorization. Please close this window and return to the program.')
         print('Authorization Completed')
@@ -168,16 +168,18 @@ if __name__ == "__main__":
     course_data = []
     #Opening Website using desired browser
     driver_paths = {}
-    with open('paths.json', 'r+') as path_file:
-        paths = path_file.read()
-        if paths:
-            try:
+    try:
+        with open('paths.json', 'r+') as path_file:
+            paths = path_file.read()
+            if paths:
                 driver_paths = json.loads(paths)
-            except json.JSONDecodeError:
-                paths.write('')
-                print('ATTENTION: Your paths.json file that stored the path to your chromedriver/geckodriver has gone corrupt.', 
-                        'Manually changing the contents of the file could be one of the reasons. The corrupt data has been deleted.',
-                        'The driver paths that you had entered as input are now erased. You will have to input them again. Inconvenience is regretted.')
+    except FileNotFoundError:
+        pass	        
+    except json.JSONDecodeError:
+        paths.write('')
+        print('ATTENTION: Your paths.json file that stored the path to your chromedriver/geckodriver has gone corrupt.', 
+              'Manually changing the contents of the file could be one of the reasons. The corrupt data has been deleted.',
+              'The driver paths that you had entered as input are now erased. You will have to input them again. Inconvenience is regretted.')
     while True:
         browser = int(input("Choose your browser:\n1. Chrome\n2. Firefox\nChoose: "))
         if browser == 1:
