@@ -168,18 +168,17 @@ if __name__ == "__main__":
     course_data = []
     #Opening Website using desired browser
     driver_paths = {}
-    try:
+    if os.path.exists('paths.json'):
         with open('paths.json', 'r+') as path_file:
             paths = path_file.read()
-            if paths:
+        if paths:
+            try:
                 driver_paths = json.loads(paths)
-    except FileNotFoundError:
-        pass	        
-    except json.JSONDecodeError:
-        paths.write('')
-        print('ATTENTION: Your paths.json file that stored the path to your chromedriver/geckodriver has gone corrupt.', 
-              'Manually changing the contents of the file could be one of the reasons. The corrupt data has been deleted.',
-              'The driver paths that you had entered as input are now erased. You will have to input them again. Inconvenience is regretted.')
+            except json.JSONDecodeError:
+                paths.write('')
+                print('ATTENTION: Your paths.json file that stored the path to your chromedriver/geckodriver has gone corrupt.', 
+                    'Manually changing the contents of the file could be one of the reasons. The corrupt data has been deleted.',
+                    'The driver paths that you had entered as input are now erased. You will have to input them again. Inconvenience is regretted.')
     while True:
         browser = int(input("Choose your browser:\n1. Chrome\n2. Firefox\nChoose: "))
         if browser == 1:
