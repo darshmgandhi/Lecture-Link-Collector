@@ -68,7 +68,7 @@ def save(data):
     emails = []
     SCOPES = ['https://www.googleapis.com/auth/drive.file']
 
-    print('Please select a method to save your lecture links:')
+    print('\nPlease select a method to save your lecture links:')
     if os.path.exists('token.json'):
         with open('token.json', 'r') as preferences:
             users = json.load(preferences)
@@ -111,7 +111,7 @@ def save(data):
             f.write(data)
         print(f'File \'{filename}\' has been successfully locally saved as a CSV File.')
         return
-
+    print('NOTE: You will now be asked to enter a desired name for your lecture links file. If you want to update an older file instead of creating a new file, just write the name of that old file.')
     filename = input("Save As(Enter filename without extension): ").strip()
     media = MediaIoBaseUpload(io.BytesIO(data.encode('utf-8')), mimetype = 'text/csv')
     files_on_drive = service.files().list(q = f"name = '{filename}'", 
