@@ -4,9 +4,29 @@ import os
 import io
 import sys
 import json
+import subprocess
+import pkg_resources
 from getpass import getpass
 from traceback import print_exc, format_exc
 from datetime import date, datetime, timedelta
+
+required_modules = {'selenium', 'google-api-python-client', 'google-auth-httplib2', 'google-auth-oauthlib'}
+installed_modules = {pkg.key for pkg in pkg_resources.working_set}
+missing_modules = required_modules - installed_modules
+
+if missing_modules:
+    print('To run this program properly, some packages have to be installed.\nThose packages are:', *['  ' + i for i in missing_modules], sep = '\n')
+    while True:
+        install_choice = input('Do you want to proceed with the installation(y/n)? ').lower()
+        if install_choice == 'y':
+            subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--upgrade', *missing_modules])
+            print('Running Lecture Links Collector...\n')
+            break
+        elif install_choice == 'n':
+            print('This program cannot run without installing the listed packages. Quitting the program...')
+            sys.exit()
+        else:
+            print('Please choose a valid option.')
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By 
@@ -55,7 +75,7 @@ def save(data):
         emails = users["emails"]
         for user in range(len(emails)):
             print(f'{user + 1}. Upload to Google Drive as a Spreadsheet ({emails[user]})')
-    choice = int(input(f'{len(emails) + 1}. Upload to Google Drive as a Spreadsheet (Choose a new account)\n{len(emails) + 2}. Save locally as a CSV file\nChoose: '))
+    choice = int(input(f'{len(emails) + 1}. Upload to Google Drive as a Spreadsheet{" (Use another account)" if emails else ""}\n{len(emails) + 2}. Save locally as a CSV file\nChoose: '))
 
     if choice <= len(emails):
         creds = Credentials.from_authorized_user_info(users['tokens'][choice - 1], SCOPES)
@@ -138,7 +158,7 @@ def save_as_file(data):
         print('Unfortunately, an unknown error has occurred. Exiting the program...')
 
 if __name__ == "__main__":
-    print("Lecture Link Collector(URL: learn.niituniversity.in, Output File Format: .csv)")
+    print("Lecture Link Collector(for learn.niituniversity.in)")
     #Taking user credentials and course details as input
     email_id = input("Email Id(Without @st.niituniversity.in): ").strip()
     password = getpass().strip()
