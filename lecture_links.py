@@ -184,10 +184,10 @@ if __name__ == "__main__":
         user_data['email'] = email_id
     password = getpass().strip()
     if course_preferences:
-        print('Choose a course or enter a new one:')
+        print('Choose a saved course by entering the corresponding number given with it\'s name or enter a new course name.\nSaved Courses:')
         for index, course in enumerate(course_preferences, start = 1):
             print(f'{index}. {course}')
-    course_name = input("Enter any keyword related to course(Ex. Algorithms from Introduction to Algorithms, Data Structures from Data Structures)(Case Sensitive): ").strip()
+    course_name = input(f"Enter any keyword related to course(Ex. Algorithms from Introduction to Algorithms, Data Structures from Data Structures)(Case Sensitive){' or enter the course number' if course_preferences else ''}: ").strip()
     if course_name.isnumeric() and int(course_name) <= len(course_preferences):
         course_name = course_preferences[int(course_name) - 1]
     else:
@@ -196,11 +196,11 @@ if __name__ == "__main__":
         else:
             user_data['courses'] = [course_name]
     if date_preferences:
-        print('Choose a date or enter a new one:')
+        print('Choose a saved date by entering the corresponding number given with it or enter a new date.\nSaved Dates:')
         for index, date in enumerate(date_preferences, start = 1):
             date_split = date.split('/')
             print(f'{index}. {calendar.month_name[int(date_split[1])]} {date_split[0]}, {date_split[2]}')
-    course_start_date = input("Enter the starting date from which the links have to be collected(DD/MM/YYYY): ").strip()
+    course_start_date = input(f"Enter the starting date from which the links have to be collected(DD/MM/YYYY){' or enter the date number' if date_preferences else ''}: ").strip()
     if course_start_date.isnumeric() and int(course_start_date) <= len(date_preferences):
         course_start_date = date_preferences[int(course_start_date) - 1]
     else:
