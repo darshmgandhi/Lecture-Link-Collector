@@ -4,6 +4,7 @@ import os
 import io
 import sys
 import json
+import calendar
 import subprocess
 import pkg_resources
 from getpass import getpass
@@ -160,51 +161,89 @@ def save_as_file(data):
 if __name__ == "__main__":
     print("Lecture Link Collector(for learn.niituniversity.in)")
     #Taking user credentials and course details as input
-    email_id = input("Email Id(Without @st.niituniversity.in): ").strip()
+    user_data = {}
+    email_id = None
+    course_preferences = []
+    date_preferences = []
+    if os.path.exists('paths.json'):
+        try:
+            with open('paths.json') as user_file:
+                user_data = json.load(user_file)
+            email_id = user_data['email']
+            course_preferences = user_data['courses']
+            date_preferences = user_data['dates']
+        except json.JSONDecodeError:
+            os.remove('paths.json')
+            print('ATTENTION: Your paths.json file that stored your data and the path to your chromedriver/geckodriver has gone corrupt.', 
+                  'Manually changing the contents of the file could be one of the reasons. The corrupt file has been deleted.',
+                  'The driver paths that you had entered as input are now erased. You will have to input them again. Inconvenience is regretted.')
+        except KeyError:
+            pass
+    if not email_id or input(f'Continue with {email_id}@st.niituniversity.in(y/n)? ').strip().lower() != 'y':
+        email_id = input("Email Id(Without @st.niituniversity.in): ").strip()
+        user_data['email'] = email_id
     password = getpass().strip()
+    if course_preferences:
+        print('Choose a course or enter a new one:')
+        for index, course in enumerate(course_preferences, start = 1):
+            print(f'{index}. {course}')
     course_name = input("Enter any keyword related to course(Ex. Algorithms from Introduction to Algorithms, Data Structures from Data Structures)(Case Sensitive): ").strip()
-    course_start_date = datetime.strptime(input("Enter the starting date from which the links have to be collected(DD/MM/YYYY): ").strip(), '%d/%m/%Y').date()
-    week_start = date.today()
+    if course_name.isnumeric() and int(course_name) <= len(course_preferences):
+        course_name = course_preferences[int(course_name) - 1]
+    else:
+        if course_preferences:
+            user_data['courses'].append(course_name)
+        else:
+            user_data['courses'] = [course_name]
+    if date_preferences:
+        print('Choose a date or enter a new one:')
+        for index, date in enumerate(date_preferences, start = 1):
+            date_split = date.split('/')
+            print(f'{index}. {calendar.month_name[int(date_split[1])]} {date_split[0]}, {date_split[2]}')
+    course_start_date = input("Enter the starting date from which the links have to be collected(DD/MM/YYYY): ").strip()
+    if course_start_date.isnumeric() and int(course_start_date) <= len(date_preferences):
+        course_start_date = date_preferences[int(course_start_date) - 1]
+    else:
+        if date_preferences:
+            user_data['dates'].append(course_start_date)
+        else:
+            user_data['dates'] = [course_start_date]
+    course_start_date = datetime.strptime(course_start_date, '%d/%m/%Y').date()
+    week_start = course_start_date.today()
     course_data = []
     #Opening Website using desired browser
-    driver_paths = {}
-    if os.path.exists('paths.json'):
-        with open('paths.json', 'r+') as path_file:
-            paths = path_file.read()
-        if paths:
-            try:
-                driver_paths = json.loads(paths)
-            except json.JSONDecodeError:
-                paths.write('')
-                print('ATTENTION: Your paths.json file that stored the path to your chromedriver/geckodriver has gone corrupt.', 
-                    'Manually changing the contents of the file could be one of the reasons. The corrupt data has been deleted.',
-                    'The driver paths that you had entered as input are now erased. You will have to input them again. Inconvenience is regretted.')
     while True:
         browser = int(input("Choose your browser:\n1. Chrome\n2. Firefox\nChoose: "))
         if browser == 1:
-            if not driver_paths or 'chromedriver' not in driver_paths:
+            if 'chromedriver' not in user_data:
                 print('Please enter the path to your chromedriver(including .exe extension). This is to be done only once. The path will be saved for future convenience.')
-                driver_paths['chromedriver'] = input('Enter path: ').strip().replace('\\\\', '\\')
-                with open('paths.json', 'w') as paths:
-                    paths.write(json.dumps(driver_paths))
+                user_data['chromedriver'] = input('Enter path: ').strip().replace('\\\\', '\\')
+            with open('paths.json', 'w') as paths:
+                paths.write(json.dumps(user_data))
             try:
-                driver = webdriver.Chrome(driver_paths['chromedriver'])
+                driver = webdriver.Chrome(user_data['chromedriver'])
             except WebDriverException:
-                print('The path that has been entered for the chromedriver is not correct. Please choose Chrome again and re-enter the path.')
-                driver_paths.pop('chromedriver')
+                print('ERROR: Cannot open browser window.\nPlease verify whether the version of Chrome you are using matches the version of the', 
+                      'chromedriver that has been installed.\nCheck your chrome version: https://www.google.com/chrome/update/ \nDownload chromedriver: https://chromedriver.chromium.org/downloads', 
+                      '\nIf the problem persists, verify whether the path that had been entered for the chromedriver was correct. The path has been deleted from your data.', 
+                      'Please choose Chrome again and re-enter the path. Inconvenience is regretted.')
+                user_data.pop('chromedriver')
                 continue
             break
         elif browser == 2:
-            if not driver_paths or 'geckodriver' not in driver_paths:
+            if not user_data or 'geckodriver' not in user_data:
                 print('Please enter the path to your geckodriver(including .exe extension). This is to be done only once. The path will be saved for future convenience.')
-                driver_paths['geckodriver'] = input('Enter path: ').strip().replace('\\\\', '\\')
-                with open('paths.json', 'w') as paths:
-                    paths.write(json.dumps(driver_paths))
+                user_data['geckodriver'] = input('Enter path: ').strip().replace('\\\\', '\\')
+            with open('paths.json', 'w') as paths:
+                paths.write(json.dumps(user_data))
             try:
-                driver = webdriver.Firefox(executable_path = driver_paths['geckodriver'])
+                driver = webdriver.Firefox(executable_path = user_data['geckodriver'])
             except WebDriverException:
-                print('The path that has been entered for the geckodriver is not correct. Please choose Firefox again and re-enter the path.')
-                driver_paths.pop('geckodriver')
+                print('ERROR: Cannot open browser window.\nPlease verify whether the version of geckodriver you have installed is suitable for the version of the', 
+                      'Firefox that you are using. Download the latest version of geckodriver.\nCheck your Firefox version: https://support.mozilla.org/en-US/kb/find-what-version-firefox-you-are-using \nDownload geckodriver: https://github.com/mozilla/geckodriver/releases', 
+                      '\nIf the problem persists, verify whether the path that had been entered for the geckodriver was correct. The path has been deleted from your data.', 
+                      'Please choose Firefox again and re-enter the path. Inconvenience is regretted.')
+                user_data.pop('geckodriver')
                 continue
             break
         else:
@@ -292,7 +331,7 @@ if __name__ == "__main__":
                     course_data = course_link + course_data
                 break    
             except (NoSuchWindowException, KeyboardInterrupt):
-                print_exc
+                print_exc()
                 sys.exit()
             except:
                 continue  
