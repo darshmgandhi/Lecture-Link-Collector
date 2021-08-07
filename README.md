@@ -9,8 +9,7 @@ Just run it in the console of your OS and it will guide you through.
   
 Requirements for execution:
 1. Python3
-2. Selenium
-3. chromedriver/geckodriver
+2. chromedriver/geckodriver
   
   Precautions to be taken: 
 1. Your password will be masked while you are entering it although it is recommended that you don't use any IDEs like IDLE since masking will not work there. It is better to use the console of your OS.
